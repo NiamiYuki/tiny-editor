@@ -1,0 +1,49 @@
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+#app {
+  display: flex;
+}
+
+.editor-panel {
+  flex: 2;
+  padding: 20px;
+}
+
+.template-panel {
+  flex: 1;
+  background: #f5f5f5;
+  padding: 20px;
+  border-left: 1px solid #ccc;
+}
+
+#template-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 10px 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+#template-list li {
+  padding: 5px;
+  cursor: pointer;
+}
+
+#template-list li.selected {
+  background: #d0e0ff;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+input#edit {
+  width: 100%;
+  padding: 5px;
+}
