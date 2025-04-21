@@ -1,3 +1,5 @@
+import { template } from './template.js';
+
 export function initTemplatePanel() {
   const container = document.querySelector('.template-panel');
   container.innerHTML = `
@@ -10,30 +12,20 @@ export function initTemplatePanel() {
     <input id="edit" placeholder="Edit template" />
   `;
 
-  let selectedIndex = null;
+  let selectedId = null;
 
   const list = container.querySelector('#template-list');
   const input = container.querySelector('#edit');
 
-  function getTemplates() {
-    return JSON.parse(localStorage.getItem('templates') || '["template 1", "template 2", "template 3"]');
-  }
-
-  function saveTemplates(templates) {
-    localStorage.setItem('templates', JSON.stringify(templates));
-    window.dispatchEvent(new Event('templates-changed'));
-  }
-
   function render() {
-    const templates = getTemplates();
     list.innerHTML = '';
-    templates.forEach((tpl, idx) => {
+    template.list.forEach((tpl) => {
       const li = document.createElement('li');
-      li.textContent = tpl;
-      li.className = idx === selectedIndex ? 'selected' : '';
+      li.textContent = tpl.text;
+      li.className = tpl.id === selectedId ? 'selected' : '';
       li.addEventListener('click', () => {
-        selectedIndex = idx;
-        input.value = tpl;
+        selectedId = tpl.id;
+        input.value = tpl.text;
         render();
       });
       list.appendChild(li);
@@ -41,11 +33,8 @@ export function initTemplatePanel() {
   }
 
   input.addEventListener('input', () => {
-    const templates = getTemplates();
-    if (selectedIndex !== null) {
-      templates[selectedIndex] = input.value;
-      saveTemplates(templates);
-      render();
+    if (selectedId !== null) {
+      template.edit(selectedId, input.value);
     }
   });
 
@@ -55,20 +44,17 @@ export function initTemplatePanel() {
   });
 
   container.querySelector('#add').addEventListener('click', () => {
-    const templates = getTemplates();
-    templates.push('template');
-    saveTemplates(templates);
-    selectedIndex = templates.length - 1;
-    input.value = templates[selectedIndex];
+    template.add('template');
+    const last = template.list[template.list.length - 1];
+    selectedId = last.id;
+    input.value = last.text;
     render();
   });
 
   container.querySelector('#remove').addEventListener('click', () => {
-    let templates = getTemplates();
-    if (selectedIndex !== null) {
-      templates.splice(selectedIndex, 1);
-      saveTemplates(templates);
-      selectedIndex = null;
+    if (selectedId !== null) {
+      template.remove(selectedId);
+      selectedId = null;
       input.value = '';
       render();
     }

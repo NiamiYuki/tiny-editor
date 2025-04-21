@@ -8,50 +8,52 @@ export class DropdownComponent extends HTMLElement {
 
   constructor() {
     super();
-    console.log('rfrfrfrf')
 
     const wrapper = document.createElement('div');
-    wrapper.style.display = 'inline-block';
-    wrapper.style.padding = '2px';
+    wrapper.className = 'wrapper';
 
     const select = document.createElement('select');
     select.className = 'custom-dropdown';
 
-
-
-    select.style.padding = '5px 8px';
-    select.style.borderRadius = '6px';
-    select.style.border = '1px solid #888';
-    select.style.fontSize = '14px';
-    select.style.backgroundColor = '#f8f8f8';
-
     this.select = select;
     this.wrapper = wrapper;
 
-    console.log('here we are inited')
-    template.subscribe(() => this.updateOptions())
-    this.updateOptions
-
+    template.subscribe(() => this.updateOptions());
+    this.updateOptions();
   }
 
   updateOptions() {
-    // template.list.forEach
-    ////
+    const selectedValue = +this.select.value;
+    this.select.innerHTML = '';
+
+    const list = template.list;
+    list.forEach((tpl) => {
+      const option = document.createElement('option');
+      option.value = tpl.id;
+      option.textContent = tpl.text;
+      this.select.appendChild(option);
+    });
+
+    const errorOption = document.createElement('option');
+    errorOption.value = 'error';
+    errorOption.textContent = 'ERROR';
+    errorOption.hidden = true;
+    this.select.appendChild(errorOption);
+
+    const values = list.map(tpl => tpl.id);
+    if (selectedValue && values.includes(selectedValue)) {
+      this.select.value = selectedValue;
+    } else if (selectedValue && !values.includes(selectedValue)) {
+      this.select.value = 'error';
+    } else if (!selectedValue && list.length > 0) {
+      this.select.value = list[0].id;
+    } else {
+      this.select.value = 'error';
+    }
   }
 
-  connectedCallback() { 
+  connectedCallback() {
     if (!this.inited) {
-      const values = (this.getAttribute('value') || 'template 1,template 2,template 3')
-      .split(',')
-      .map(s => s.trim());
-
-      values.forEach(val => {
-        const option = document.createElement('option');
-        option.textContent = val;
-        option.value = val;
-        this.select.appendChild(option);
-      });
-
       this.wrapper.appendChild(this.select);
       this.appendChild(this.wrapper);
       this.inited = true;
